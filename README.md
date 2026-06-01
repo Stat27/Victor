@@ -44,6 +44,8 @@ Run a small benchmark prompt set:
 ./scripts/benchmark.sh
 ```
 
+The benchmark prints each answer plus Ollama timing metrics, including total duration, prompt evaluation speed, generated token count, and generation tokens per second.
+
 ## Profiles
 
 The scripts read `VICTOR_PROFILE`, defaulting to:
@@ -71,7 +73,7 @@ Profiles define:
 2. Pull the model with `scripts/pull_model.sh`.
 3. Create or recreate Victor with `scripts/create_victor.sh`.
 4. Run `scripts/test_api.sh`.
-5. Run `scripts/benchmark.sh`.
+5. Run `scripts/benchmark.sh` and compare generation tokens/sec.
 6. Record observations in `runs/`.
 7. Promote the best profile and `Modelfile` settings.
 
