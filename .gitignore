@@ -1,0 +1,32 @@
+# Local model storage and large artifacts
+.ollama/
+models/
+*.gguf
+*.safetensors
+*.bin
+*.pt
+*.pth
+
+# Runtime logs and generated outputs
+logs/
+tmp/
+*.log
+benchmark-results/
+
+# Local environment overrides
+.env
+*.local.env
+
+# OS/editor noise
+.DS_Store
+.idea/
+.vscode/
+*~
+
+# Python/cache noise if helper tooling is added later
+__pycache__/
+.pytest_cache/
+.mypy_cache/
+.ruff_cache/
+.venv/
+venv/

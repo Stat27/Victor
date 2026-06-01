@@ -1,0 +1,3 @@
+{"id":"intro","prompt":"Introduce yourself in one sentence."}
+{"id":"summary","prompt":"Summarize why a local model is useful for a developer workstation in three bullets."}
+{"id":"tradeoff","prompt":"Compare Ollama and llama.cpp for a laptop deployment in five concise sentences."}

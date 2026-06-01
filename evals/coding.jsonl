@@ -1,0 +1,3 @@
+{"id":"bash","prompt":"Write a bash command that checks whether ollama is installed and prints a helpful message if it is missing."}
+{"id":"curl","prompt":"Write a curl request to call Ollama's chat API with model victor and a single user message."}
+{"id":"repo","prompt":"Suggest a minimal Git repository structure for tracking local model deployment experiments."}

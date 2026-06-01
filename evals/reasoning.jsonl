@@ -1,0 +1,3 @@
+{"id":"planning","prompt":"Create a five-step plan to benchmark two local models fairly on the same machine."}
+{"id":"constraint","prompt":"A laptop has 8 GB VRAM and the desktop already uses 1.3 GB. Explain why a 9B quantized model may work but a 14B model may be slow."}
+{"id":"debug","prompt":"Ollama is installed but the model responds very slowly and nvidia-smi shows no compute process. List likely causes and checks."}
