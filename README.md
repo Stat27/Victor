@@ -76,6 +76,23 @@ npm run agent -- "how do I recreate victor in debug mode?"
 
 `npm run web` always searches. `npm run agent` first asks Victor whether current web information is needed; if yes, Victor proposes the search query and the wrapper fetches sources before answering.
 
+Start an interactive chat session:
+
+```bash
+npm run chat
+```
+
+Chat commands:
+
+- `/help`: show commands.
+- `/memory`: show loaded memory.
+- `/remember <note>`: append a user-written note to `memory/facts.md`.
+- `/propose-memory`: ask Victor to propose one memory update from the session.
+- `/approve`: save the pending proposed memory update.
+- `/reject`: discard the pending proposed memory update.
+- `/clear`: clear session history.
+- `/exit`: exit chat.
+
 For model and hardware questions, the agent adds source-targeted fallback searches and tries to avoid stale year-specific queries unless the user asks for a specific year.
 
 When the user asks for a take or recommendation, Victor should ground facts first and then include a clearly labeled practical take.
@@ -96,6 +113,7 @@ Victor wrappers inject lightweight local memory into agent/web prompts:
 - `memory/machine.md`: hardware and environment facts.
 - `memory/preferences.md`: workflow and behavior preferences.
 - `memory/benchmarks.md`: local benchmark observations.
+- `memory/facts.md`: approved durable notes.
 
 This is prompt-injected memory, not model training. Edit these files when the machine, preferences, or benchmark baseline changes.
 

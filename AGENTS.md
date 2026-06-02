@@ -25,6 +25,7 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Main benchmark script: `scripts/benchmark.sh`.
 - Web-backed chat wrapper: `src/web_chat.ts`.
 - Agent-style web router: `src/agent_chat.ts`.
+- Interactive chat with approved memory writes: `src/chat.ts`.
 - Prompt-injected memory files: `memory/*.md`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
@@ -229,6 +230,7 @@ The wrappers load Markdown memory files before asking Victor:
 memory/machine.md
 memory/preferences.md
 memory/benchmarks.md
+memory/facts.md
 ```
 
 Use memory for stable local facts and preferences:
@@ -239,6 +241,15 @@ Use memory for stable local facts and preferences:
 - repo operating rules.
 
 Do not store secrets, private prompts, API keys, or unrelated personal information in memory.
+
+Interactive chat can write memory only through explicit commands:
+
+- `/remember <note>` appends a user-written note to `memory/facts.md`.
+- `/propose-memory` asks Victor for one candidate memory update.
+- `/approve` writes the candidate update.
+- `/reject` discards it.
+
+Victor must never silently write persistent memory.
 
 ## Acceptance Criteria For The Next Milestone
 

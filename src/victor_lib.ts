@@ -3,6 +3,7 @@ declare const process: {
 };
 
 import { readFile } from "node:fs/promises";
+import { appendFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export type SearchResult = {
@@ -55,6 +56,20 @@ export async function loadMemory(config: VictorConfig): Promise<string> {
   }
 
   return sections.join("\n\n---\n\n");
+}
+
+export async function appendMemory(config: VictorConfig, file: string, note: string): Promise<void> {
+  if (!["machine.md", "preferences.md", "benchmarks.md", "projects.md", "facts.md"].includes(file)) {
+    throw new Error(`Unsupported memory file: ${file}`);
+  }
+
+  const trimmed = note.trim();
+
+  if (!trimmed) {
+    throw new Error("Memory note is empty.");
+  }
+
+  await appendFile(join(config.memoryDir, file), `\n- ${trimmed}\n`, "utf8");
 }
 
 export async function searchDuckDuckGo(query: string, limit: number): Promise<SearchResult[]> {
