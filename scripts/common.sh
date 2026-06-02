@@ -21,6 +21,16 @@ MODEL="${MODEL:?MODEL is required in the selected profile}"
 VICTOR_NAME="${VICTOR_NAME:-victor}"
 OLLAMA_HOST="${OLLAMA_HOST:-http://localhost:11434}"
 NUM_CTX="${NUM_CTX:-8192}"
+THINK="${THINK:-false}"
+
+case "$THINK" in
+  true|false) ;;
+  low|medium|high) ;;
+  *)
+    echo "THINK must be true, false, low, medium, or high; got: $THINK" >&2
+    exit 1
+    ;;
+esac
 
 require_cmd() {
   local cmd="$1"
@@ -37,4 +47,5 @@ print_config() {
   echo "  victor name: $VICTOR_NAME"
   echo "  ollama host: $OLLAMA_HOST"
   echo "  num ctx: $NUM_CTX"
+  echo "  think: $THINK"
 }

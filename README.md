@@ -46,6 +46,12 @@ Run a small benchmark prompt set:
 
 The benchmark prints each answer plus Ollama timing metrics, including total duration, prompt evaluation speed, generated token count, and generation tokens per second.
 
+By default, the laptop profile sends `think: false` to Ollama so daily-chat benchmarks measure final-answer speed instead of hidden reasoning traces. To benchmark thinking mode for reasoning tasks:
+
+```bash
+VICTOR_PROFILE=profiles/laptop-8gb-thinking.env ./scripts/benchmark.sh evals/reasoning.jsonl
+```
+
 ## Profiles
 
 The scripts read `VICTOR_PROFILE`, defaulting to:
@@ -66,6 +72,7 @@ Profiles define:
 - `VICTOR_NAME`: local Ollama model alias.
 - `OLLAMA_HOST`: local Ollama API base URL.
 - `NUM_CTX`: requested context window for the generated `Modelfile`.
+- `THINK`: request-level thinking setting sent to Ollama, usually `false` for daily chat or `true` for reasoning tests.
 
 ## Iteration Loop
 

@@ -51,11 +51,13 @@ while IFS= read -r line; do
   response="$(jq -n \
     --arg model "$VICTOR_NAME" \
     --arg prompt "$prompt" \
+    --arg think "$THINK" \
     '{
       model: $model,
       messages: [
         {role: "user", content: $prompt}
       ],
+      think: (if $think == "true" then true elif $think == "false" then false else $think end),
       stream: false
     }' | curl -s "$OLLAMA_HOST/api/chat" \
     -H 'Content-Type: application/json' \
