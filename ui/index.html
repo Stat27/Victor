@@ -8,38 +8,114 @@
   </head>
   <body>
     <main class="app-shell">
-      <aside class="sidebar">
-        <div>
-          <h1>Victor</h1>
-          <p>Local assistant</p>
-        </div>
-        <div class="status-panel">
-          <div class="status-row">
-            <span>Model</span>
-            <strong>victor</strong>
-          </div>
-          <div class="status-row">
-            <span>Mode</span>
-            <strong>agent</strong>
-          </div>
-          <div class="status-row">
-            <span>Memory</span>
-            <strong id="memory-status">loading</strong>
+      <aside class="sidebar" data-tauri-drag-region>
+        <div class="brand-block">
+          <div class="brand-mark">V</div>
+          <div class="brand-copy">
+            <h1>Victor</h1>
+            <p>Desktop agent</p>
           </div>
         </div>
-        <button id="memory-button" class="secondary-button" type="button">View memory</button>
+
+        <section class="runtime-panel" aria-label="Runtime status">
+          <div class="runtime-item">
+            <span class="runtime-dot"></span>
+            <div>
+              <span>Ollama</span>
+              <strong>local host</strong>
+            </div>
+          </div>
+          <div class="runtime-item">
+            <span class="runtime-dot web"></span>
+            <div>
+              <span>Routing</span>
+              <strong>auto web</strong>
+            </div>
+          </div>
+          <div class="runtime-item">
+            <span class="runtime-dot memory"></span>
+            <div>
+              <span>Memory</span>
+              <strong id="memory-status">loading</strong>
+            </div>
+          </div>
+        </section>
+
+        <section class="quick-actions" aria-label="Quick prompts">
+          <button class="quick-action" type="button" data-prompt="What should I test next for Victor?">
+            <span>Next test</span>
+            <small>Workflow</small>
+          </button>
+          <button class="quick-action" type="button" data-prompt="What is the best model choice for my GPU based on memory and web sources?">
+            <span>Model fit</span>
+            <small>Hardware</small>
+          </button>
+          <button class="quick-action" type="button" data-prompt="Summarize my current Victor memory and benchmarks.">
+            <span>Memory summary</span>
+            <small>Context</small>
+          </button>
+        </section>
+
+        <div class="sidebar-footer">
+          <button id="new-chat-button" class="secondary-button quiet" type="button">New chat</button>
+          <button id="memory-button" class="secondary-button" type="button">View memory</button>
+        </div>
       </aside>
 
-      <section class="chat-panel">
-        <div id="messages" class="messages" aria-live="polite"></div>
+      <section class="workspace">
+        <header class="topbar" data-tauri-drag-region>
+          <div class="title-stack">
+            <span class="eyebrow">Victor</span>
+            <h2>Agent chat</h2>
+          </div>
+          <div class="status-strip" aria-label="Agent capabilities">
+            <div class="status-chip">
+              <span class="chip-dot"></span>
+              <span>Local first</span>
+            </div>
+            <div class="status-chip">
+              <span class="chip-dot web"></span>
+              <span>Web aware</span>
+            </div>
+            <div class="status-chip">
+              <span class="chip-dot memory"></span>
+              <span>Memory on</span>
+            </div>
+          </div>
+        </header>
+
+        <div id="messages" class="messages" aria-live="polite">
+          <section class="empty-state" id="empty-state">
+            <div class="empty-panel">
+              <div class="empty-kicker">Ready</div>
+              <h3>Ask Victor</h3>
+              <div class="prompt-pills" aria-label="Starter prompts">
+                <button type="button" data-prompt="What should I improve next in Victor?">Improve Victor</button>
+                <button type="button" data-prompt="Explain the latest answer and challenge weak assumptions.">Discuss deeper</button>
+                <button type="button" data-prompt="Compare my current model choices for this laptop.">Compare models</button>
+              </div>
+            </div>
+          </section>
+        </div>
+
         <form id="chat-form" class="composer">
-          <textarea
-            id="prompt"
-            rows="2"
-            placeholder="Ask Victor..."
-            autocomplete="off"
-          ></textarea>
-          <button id="send-button" type="submit">Send</button>
+          <div class="composer-shell">
+            <textarea
+              id="prompt"
+              rows="2"
+              placeholder="Ask Victor..."
+              autocomplete="off"
+            ></textarea>
+            <div class="composer-toolbar">
+              <div class="composer-meta">
+                <span id="prompt-count">0</span>
+                <span>characters</span>
+              </div>
+              <button id="send-button" type="submit" aria-label="Send message">
+                <span>Send</span>
+              </button>
+            </div>
+          </div>
         </form>
       </section>
     </main>
