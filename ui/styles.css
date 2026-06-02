@@ -12,6 +12,30 @@
   box-sizing: border-box;
 }
 
+* {
+  scrollbar-color: #9aa2aa #edf0f2;
+  scrollbar-width: thin;
+}
+
+::-webkit-scrollbar {
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  background: #edf0f2;
+}
+
+::-webkit-scrollbar-thumb {
+  border: 3px solid #edf0f2;
+  border-radius: 999px;
+  background: #9aa2aa;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #747d86;
+}
+
 body {
   margin: 0;
   min-height: 100vh;
@@ -42,6 +66,9 @@ button {
   grid-template-rows: auto auto minmax(0, 1fr) auto;
   gap: 20px;
   min-height: 100vh;
+  max-height: 100vh;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
   padding: 20px;
   color: #f8f9fa;
   background: #20211f;
@@ -270,9 +297,19 @@ button {
   flex-direction: column;
   gap: 18px;
   min-height: 0;
-  overflow: auto;
+  overflow-x: hidden;
+  overflow-y: scroll;
+  scrollbar-gutter: stable;
   padding: 34px 28px 28px;
   scroll-behavior: smooth;
+}
+
+.messages::-webkit-scrollbar-track {
+  background: #f1f3f4;
+}
+
+.messages::-webkit-scrollbar-thumb {
+  border-color: #f1f3f4;
 }
 
 .empty-state {
@@ -635,6 +672,7 @@ dialog header button {
 pre {
   max-height: 64vh;
   overflow: auto;
+  scrollbar-gutter: stable;
   margin: 0;
   padding: 18px;
   color: #242a31;
