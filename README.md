@@ -76,6 +76,8 @@ npm run agent -- "how do I recreate victor in debug mode?"
 
 `npm run web` always searches. `npm run agent` first asks Victor whether current web information is needed; if yes, Victor proposes the search query and the wrapper fetches sources before answering.
 
+For model and hardware questions, the agent adds source-targeted fallback searches and tries to avoid stale year-specific queries unless the user asks for a specific year.
+
 Useful environment variables:
 
 - `OLLAMA_HOST`: local Ollama API URL, default `http://localhost:11434`.

@@ -130,6 +130,8 @@ Rules:
 - If the sources do not support a claim, say so.
 - Prefer concise, practical answers.
 - Do not invent facts beyond the provided sources.
+- Distinguish GPU VRAM from system RAM. Do not treat an 8 GB RAM source as evidence for an 8 GB NVIDIA VRAM recommendation.
+- If the user's observed local benchmark conflicts with generic web advice, say that the local benchmark is more relevant for this machine.
 
 Question:
 ${question}
