@@ -18,14 +18,15 @@ form.addEventListener("submit", async (event) => {
   }
 
   addMessage("user", prompt);
+  const pending = addMessage("assistant", "Thinking...");
   promptInput.value = "";
   setBusy(true);
 
   try {
     const raw = await invoke("ask_victor", { message: prompt });
-    addMessage("assistant", extractAnswer(raw));
+    updateMessage(pending, extractAnswer(raw));
   } catch (error) {
-    addMessage("assistant", `Error: ${String(error)}`);
+    updateMessage(pending, `Error: ${String(error)}`);
   } finally {
     setBusy(false);
   }
@@ -61,6 +62,12 @@ function addMessage(role, content) {
   item.className = `message ${role}`;
   item.textContent = content;
   messages.appendChild(item);
+  messages.scrollTop = messages.scrollHeight;
+  return item;
+}
+
+function updateMessage(item, content) {
+  item.textContent = content;
   messages.scrollTop = messages.scrollHeight;
 }
 

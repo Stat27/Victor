@@ -3,21 +3,25 @@ use std::path::PathBuf;
 use std::process::Command;
 
 #[tauri::command]
-fn ask_victor(message: String) -> Result<String, String> {
-    let root = repo_root()?;
-    let output = Command::new("node")
-        .arg("src/agent_chat.ts")
-        .arg(message)
-        .current_dir(&root)
-        .output()
-        .map_err(|error| format!("failed to run Victor agent: {error}"))?;
+async fn ask_victor(message: String) -> Result<String, String> {
+    tauri::async_runtime::spawn_blocking(move || {
+        let root = repo_root()?;
+        let output = Command::new("node")
+            .arg("src/agent_chat.ts")
+            .arg(message)
+            .current_dir(&root)
+            .output()
+            .map_err(|error| format!("failed to run Victor agent: {error}"))?;
 
-    if !output.status.success() {
-        let stderr = String::from_utf8_lossy(&output.stderr);
-        return Err(format!("Victor agent failed: {stderr}"));
-    }
+        if !output.status.success() {
+            let stderr = String::from_utf8_lossy(&output.stderr);
+            return Err(format!("Victor agent failed: {stderr}"));
+        }
 
-    Ok(String::from_utf8_lossy(&output.stdout).to_string())
+        Ok(String::from_utf8_lossy(&output.stdout).to_string())
+    })
+    .await
+    .map_err(|error| format!("Victor task failed: {error}"))?
 }
 
 #[tauri::command]
