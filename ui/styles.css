@@ -1,0 +1,194 @@
+:root {
+  color-scheme: light;
+  font-family:
+    Inter, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI",
+    sans-serif;
+  background: #f4f5f7;
+  color: #17191c;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  margin: 0;
+  min-height: 100vh;
+}
+
+button,
+textarea {
+  font: inherit;
+}
+
+.app-shell {
+  display: grid;
+  grid-template-columns: 260px minmax(0, 1fr);
+  min-height: 100vh;
+}
+
+.sidebar {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 24px;
+  padding: 24px;
+  background: #151a21;
+  color: #f6f7f9;
+}
+
+.sidebar h1 {
+  margin: 0;
+  font-size: 28px;
+  line-height: 1.1;
+}
+
+.sidebar p {
+  margin: 8px 0 0;
+  color: #aeb7c2;
+}
+
+.status-panel {
+  display: grid;
+  gap: 10px;
+}
+
+.status-row {
+  display: flex;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 10px 0;
+  border-bottom: 1px solid #2d3540;
+}
+
+.status-row span {
+  color: #aeb7c2;
+}
+
+.secondary-button {
+  width: 100%;
+  border: 1px solid #46515d;
+  background: transparent;
+  color: #f6f7f9;
+  padding: 10px 12px;
+  border-radius: 6px;
+  cursor: pointer;
+}
+
+.chat-panel {
+  display: grid;
+  grid-template-rows: minmax(0, 1fr) auto;
+  min-height: 100vh;
+}
+
+.messages {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+  overflow: auto;
+  padding: 24px;
+}
+
+.message {
+  max-width: 840px;
+  white-space: pre-wrap;
+  line-height: 1.45;
+  padding: 14px 16px;
+  border-radius: 8px;
+  border: 1px solid #d9dde3;
+  background: #ffffff;
+}
+
+.message.user {
+  align-self: flex-end;
+  background: #e8f0ff;
+  border-color: #bfd3ff;
+}
+
+.message.assistant {
+  align-self: flex-start;
+}
+
+.composer {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 108px;
+  gap: 12px;
+  padding: 18px 24px 24px;
+  border-top: 1px solid #d9dde3;
+  background: #ffffff;
+}
+
+textarea {
+  resize: vertical;
+  min-height: 54px;
+  max-height: 180px;
+  padding: 12px;
+  border: 1px solid #c7ccd4;
+  border-radius: 6px;
+}
+
+.composer button {
+  border: 0;
+  border-radius: 6px;
+  background: #176bff;
+  color: #ffffff;
+  cursor: pointer;
+}
+
+.composer button:disabled {
+  background: #8796ad;
+  cursor: wait;
+}
+
+dialog {
+  width: min(760px, calc(100vw - 40px));
+  border: 1px solid #d9dde3;
+  border-radius: 8px;
+  padding: 0;
+}
+
+dialog header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 18px;
+  border-bottom: 1px solid #d9dde3;
+}
+
+dialog h2 {
+  margin: 0;
+  font-size: 18px;
+}
+
+dialog header button {
+  border: 1px solid #c7ccd4;
+  background: #ffffff;
+  border-radius: 6px;
+  padding: 6px 10px;
+}
+
+pre {
+  max-height: 60vh;
+  overflow: auto;
+  margin: 0;
+  padding: 18px;
+  white-space: pre-wrap;
+}
+
+@media (max-width: 760px) {
+  .app-shell {
+    grid-template-columns: 1fr;
+  }
+
+  .sidebar {
+    min-height: auto;
+  }
+
+  .composer {
+    grid-template-columns: 1fr;
+  }
+
+  .composer button {
+    min-height: 44px;
+  }
+}

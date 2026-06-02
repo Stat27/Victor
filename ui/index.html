@@ -1,0 +1,59 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Victor</title>
+    <link rel="stylesheet" href="./styles.css" />
+  </head>
+  <body>
+    <main class="app-shell">
+      <aside class="sidebar">
+        <div>
+          <h1>Victor</h1>
+          <p>Local assistant</p>
+        </div>
+        <div class="status-panel">
+          <div class="status-row">
+            <span>Model</span>
+            <strong>victor</strong>
+          </div>
+          <div class="status-row">
+            <span>Mode</span>
+            <strong>agent</strong>
+          </div>
+          <div class="status-row">
+            <span>Memory</span>
+            <strong id="memory-status">loading</strong>
+          </div>
+        </div>
+        <button id="memory-button" class="secondary-button" type="button">View memory</button>
+      </aside>
+
+      <section class="chat-panel">
+        <div id="messages" class="messages" aria-live="polite"></div>
+        <form id="chat-form" class="composer">
+          <textarea
+            id="prompt"
+            rows="2"
+            placeholder="Ask Victor..."
+            autocomplete="off"
+          ></textarea>
+          <button id="send-button" type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <dialog id="memory-dialog">
+      <form method="dialog">
+        <header>
+          <h2>Memory</h2>
+          <button type="submit" aria-label="Close">Close</button>
+        </header>
+        <pre id="memory-content"></pre>
+      </form>
+    </dialog>
+
+    <script src="./main.js" type="module"></script>
+  </body>
+</html>
