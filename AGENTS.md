@@ -216,6 +216,7 @@ Keep this workflow source-grounded:
 - keep fetched excerpts compact;
 - avoid stale year-specific searches unless the user asks for that year;
 - distinguish GPU VRAM sources from system RAM sources;
+- when the user asks for a take, ground facts first, then give a clearly labeled practical take;
 - do not store private queries or raw web logs by default;
 - do not pretend the model has autonomous browser access;
 - prefer dependency-light TypeScript unless a search/RAG dependency clearly earns its complexity.

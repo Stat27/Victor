@@ -78,6 +78,8 @@ npm run agent -- "how do I recreate victor in debug mode?"
 
 For model and hardware questions, the agent adds source-targeted fallback searches and tries to avoid stale year-specific queries unless the user asks for a specific year.
 
+When the user asks for a take or recommendation, Victor should ground facts first and then include a clearly labeled practical take.
+
 Useful environment variables:
 
 - `OLLAMA_HOST`: local Ollama API URL, default `http://localhost:11434`.

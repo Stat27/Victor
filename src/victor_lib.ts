@@ -144,12 +144,17 @@ ${source.excerpt}`;
 }
 
 export function buildLocalAnswerPrompt(question: string, memory: string): string {
+  const takeRule = wantsTake(question)
+    ? "- The user is asking for a take/opinion/recommendation. Give a brief factual grounding, then a clearly labeled practical take."
+    : "- If the user asks for a recommendation, give one with a short reason.";
+
   return `Answer the user's question using the available local memory when relevant.
 
 Rules:
 - Prefer concise, practical answers.
 - If local memory directly applies, use it.
 - Do not claim memory contains facts it does not contain.
+${takeRule}
 
 Local memory:
 ${memory || "(none)"}
@@ -159,6 +164,10 @@ ${question}`;
 }
 
 export function buildWebAnswerPrompt(question: string, sources: Source[], memory = ""): string {
+  const takeRule = wantsTake(question)
+    ? "- The user is asking for a take/opinion/recommendation. First ground the facts with citations, then include a clearly labeled \"My take\" section."
+    : "- If the user asks for a recommendation, give one after grounding it in sources and memory.";
+
   return `Answer the user's question using the web sources below.
 
 Rules:
@@ -169,6 +178,7 @@ Rules:
 - Distinguish GPU VRAM from system RAM. Do not treat an 8 GB RAM source as evidence for an 8 GB NVIDIA VRAM recommendation.
 - If the user's observed local benchmark conflicts with generic web advice, say that the local benchmark is more relevant for this machine.
 - Use local memory when it is more specific than generic web advice.
+${takeRule}
 
 Question:
 ${question}
@@ -178,6 +188,20 @@ ${memory || "(none)"}
 
 Sources:
 ${formatSources(sources)}`;
+}
+
+function wantsTake(question: string): boolean {
+  const lower = question.toLowerCase();
+  return (
+    lower.includes("what do you think") ||
+    lower.includes("your take") ||
+    lower.includes("what's your take") ||
+    lower.includes("is it good") ||
+    lower.includes("is this good") ||
+    lower.includes("should i") ||
+    lower.includes("do you recommend") ||
+    lower.includes("recommendation")
+  );
 }
 
 async function fetchText(url: string): Promise<string> {
