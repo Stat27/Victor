@@ -6,9 +6,13 @@
   "scripts": {
     "agent": "node src/agent_chat.ts",
     "chat": "node src/chat.ts",
+    "desktop": "env -u GTK_PATH -u GIO_MODULE_DIR -u LOCPATH XDG_DATA_DIRS=\"${XDG_DATA_DIRS_VSCODE_SNAP_ORIG:-$XDG_DATA_DIRS}\" tauri dev",
+    "desktop:build": "env -u GTK_PATH -u GIO_MODULE_DIR -u LOCPATH XDG_DATA_DIRS=\"${XDG_DATA_DIRS_VSCODE_SNAP_ORIG:-$XDG_DATA_DIRS}\" tauri build",
+    "desktop:raw": "tauri dev",
     "web": "node src/web_chat.ts"
   },
   "devDependencies": {
+    "@tauri-apps/cli": "^2.0.0",
     "@types/node": "^25.9.1"
   }
 }
