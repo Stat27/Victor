@@ -4,6 +4,7 @@
   "private": true,
   "type": "module",
   "scripts": {
+    "agent": "node src/agent_chat.ts",
     "web": "node src/web_chat.ts"
   }
 }

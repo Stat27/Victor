@@ -24,6 +24,7 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Default Victor mode: `daily`.
 - Main benchmark script: `scripts/benchmark.sh`.
 - Web-backed chat wrapper: `src/web_chat.ts`.
+- Agent-style web router: `src/agent_chat.ts`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
 user handles final `git add`, `git commit`, and `git push` unless explicitly asking the agent to do it.
@@ -197,6 +198,14 @@ Target usage:
 
 ```bash
 npm run web -- "latest Ollama tool calling docs"
+```
+
+`src/agent_chat.ts` adds a routing step where Victor decides whether the question needs current web information and proposes a search query.
+
+Target usage:
+
+```bash
+npm run agent -- "what local model should I use today?"
 ```
 
 Keep this workflow source-grounded:
