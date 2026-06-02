@@ -1,0 +1,4 @@
+{"id":"no_commits","prompt":"Git says src refspec main does not match any when I push. What likely happened and what commands fix it?"}
+{"id":"origin_exists","prompt":"Git says remote origin already exists. How do I inspect and update the remote safely?"}
+{"id":"dont_commit","prompt":"I want the assistant to edit files but not commit or push. What should the repo instructions say?"}
+{"id":"privacy_history","prompt":"A personal name was committed and pushed. Explain current-file cleanup versus full history cleanup."}

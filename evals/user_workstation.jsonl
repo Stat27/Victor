@@ -1,0 +1,4 @@
+{"id":"local_assistant_identity","prompt":"What are you optimized to help me with as a local workstation assistant? Keep it under six bullets."}
+{"id":"next_step_after_setup","prompt":"I have Ollama installed, qwen3.5:9b pulled, and victor created. What should I do next to improve this local assistant?"}
+{"id":"concise_commands","prompt":"Give me the exact commands to recreate victor with debug mode and then test the API."}
+{"id":"privacy_repo","prompt":"I accidentally pushed my personal name into a new GitHub repo. Explain the safe cleanup options in a concise way."}

@@ -1,0 +1,4 @@
+{"id":"nvidia_smi_display","prompt":"nvidia-smi shows Xorg, gnome-shell, Obsidian, and ollama using GPU memory. What does that imply for local model performance?"}
+{"id":"prime_mode","prompt":"prime-select query says nvidia. I want Intel to drive display and NVIDIA to run models. What mode should I try and how do I verify it?"}
+{"id":"slow_generation","prompt":"Ollama is responding at 2.7 tok/s with qwen3.5:9b on an 8 GB laptop GPU. List likely bottlenecks and the fastest checks."}
+{"id":"gpu_snapshot","prompt":"What GPU data should I record before and during a benchmark so future runs are comparable?"}
