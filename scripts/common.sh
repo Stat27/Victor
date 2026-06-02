@@ -3,6 +3,7 @@ set -euo pipefail
 
 ROOT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 PROFILE_PATH="${VICTOR_PROFILE:-profiles/laptop-8gb.env}"
+VICTOR_MODE="${VICTOR_MODE:-daily}"
 
 if [[ "$PROFILE_PATH" != /* ]]; then
   PROFILE_PATH="$ROOT_DIR/$PROFILE_PATH"
@@ -10,6 +11,14 @@ fi
 
 if [[ ! -f "$PROFILE_PATH" ]]; then
   echo "Profile not found: $PROFILE_PATH" >&2
+  exit 1
+fi
+
+MODEFILE_PATH="$ROOT_DIR/modes/$VICTOR_MODE.Modelfile"
+
+if [[ ! -f "$MODEFILE_PATH" ]]; then
+  echo "Victor mode not found: $VICTOR_MODE" >&2
+  echo "Expected mode file: $MODEFILE_PATH" >&2
   exit 1
 fi
 
@@ -48,4 +57,5 @@ print_config() {
   echo "  ollama host: $OLLAMA_HOST"
   echo "  num ctx: $NUM_CTX"
   echo "  think: $THINK"
+  echo "  mode: $VICTOR_MODE"
 }

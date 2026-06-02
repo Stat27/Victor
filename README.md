@@ -32,6 +32,12 @@ Create the `victor` model alias:
 ./scripts/create_victor.sh
 ```
 
+Create Victor with a specific behavior mode:
+
+```bash
+VICTOR_MODE=debug ./scripts/create_victor.sh
+```
+
 Test the local API:
 
 ```bash
@@ -66,6 +72,13 @@ Use another profile like this:
 VICTOR_PROFILE=profiles/low-vram.env ./scripts/create_victor.sh
 ```
 
+Candidate profiles:
+
+- `profiles/qwen3.5-9b.env`: default quality/practicality balance.
+- `profiles/qwen3.5-4b.env`: faster fallback.
+- `profiles/hermes3-8b.env`: persona and agent-style behavior candidate.
+- `profiles/deepseek-r1-8b.env`: reasoning comparison candidate.
+
 Profiles define:
 
 - `MODEL`: Ollama base model tag.
@@ -74,11 +87,33 @@ Profiles define:
 - `NUM_CTX`: requested context window for the generated `Modelfile`.
 - `THINK`: request-level thinking setting sent to Ollama, usually `false` for daily chat or `true` for reasoning tests.
 
+## Victor Modes
+
+The scripts read `VICTOR_MODE`, defaulting to:
+
+```bash
+daily
+```
+
+Available modes:
+
+- `daily`: concise local workstation assistant.
+- `debug`: Linux, NVIDIA, Ollama, Git, Docker, and deployment diagnostics.
+- `reasoning`: deeper engineering tradeoff analysis.
+- `code-review`: findings-first review mode.
+- `deployment`: reproducible setup, verification, rollback, and portability.
+
+Create a mode-specific Victor alias like this:
+
+```bash
+VICTOR_MODE=deployment ./scripts/create_victor.sh
+```
+
 ## Iteration Loop
 
 1. Pick a model profile.
 2. Pull the model with `scripts/pull_model.sh`.
-3. Create or recreate Victor with `scripts/create_victor.sh`.
+3. Pick a Victor mode and create or recreate Victor with `scripts/create_victor.sh`.
 4. Run `scripts/test_api.sh`.
 5. Run `scripts/benchmark.sh` and compare generation tokens/sec.
 6. Record observations in `runs/`.

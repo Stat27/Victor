@@ -21,6 +21,7 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Default model: `qwen3.5:9b`.
 - Daily-chat setting: `THINK=false`.
 - Reasoning comparison profile: `profiles/laptop-8gb-thinking.env`.
+- Default Victor mode: `daily`.
 - Main benchmark script: `scripts/benchmark.sh`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
@@ -41,7 +42,7 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 
 - Benchmark results are still copied into run notes manually.
 - Run notes can become messy because raw terminal output is pasted into Markdown.
-- There are no Victor behavior modes yet, only one generic `Modelfile`.
+- Victor behavior modes exist, but they still need benchmark comparison and refinement.
 - Evals are still generic and do not fully represent user's real workflow.
 - GPU/performance diagnostics are manual.
 - Model comparison requires running profile commands by hand.
@@ -88,9 +89,9 @@ Keep raw JSON out of the default Markdown output unless a debug flag is enabled.
 
 ### 2. Victor Modes
 
-Add mode-specific prompt files so Victor can be tuned for user's actual use.
+Mode-specific prompt files exist so Victor can be tuned for user's actual use.
 
-Proposed structure:
+Current structure:
 
 ```text
 modes/
@@ -102,12 +103,13 @@ modes/
 ```
 
 Update `scripts/create_victor.sh` to support:
+`scripts/create_victor.sh` supports:
 
 ```bash
 VICTOR_MODE=daily ./scripts/create_victor.sh
 ```
 
-Default mode should be `daily`.
+Default mode is `daily`.
 
 Mode intent:
 
@@ -190,7 +192,7 @@ Use this before and during benchmark runs to explain slow results.
 The next milestone is complete when:
 
 - a benchmark run can create a clean run note automatically;
-- Victor can be created in at least `daily` and `debug` modes;
+- Victor modes have been benchmarked against at least one user-specific eval;
 - there is at least one user-specific eval file;
 - `README.md` documents the new workflow;
 - all changed shell scripts pass `bash -n`;

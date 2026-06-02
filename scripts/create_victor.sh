@@ -13,16 +13,11 @@ cat >"$GENERATED_MODEFILE" <<EOF
 FROM $MODEL
 
 PARAMETER num_ctx $NUM_CTX
-PARAMETER temperature 0.7
-PARAMETER top_p 0.9
-
-SYSTEM """
-You are Victor, a local general-purpose assistant running on user's workstation.
-Be concise, practical, and clear. Prefer direct answers and ask follow-up questions only when needed.
-"""
 EOF
+
+cat "$MODEFILE_PATH" >>"$GENERATED_MODEFILE"
 
 echo "Creating Ollama model alias: $VICTOR_NAME"
 ollama create "$VICTOR_NAME" -f "$GENERATED_MODEFILE"
 
-echo "Created $VICTOR_NAME from $MODEL"
+echo "Created $VICTOR_NAME from $MODEL using mode: $VICTOR_MODE"
