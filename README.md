@@ -85,6 +85,17 @@ Useful environment variables:
 - `THINK`: request thinking setting, default `false`.
 - `WEB_MAX_RESULTS`: search results to fetch, default `5`.
 - `WEB_MAX_CHARS`: source excerpt size, default `1800`.
+- `VICTOR_MEMORY_DIR`: memory directory, default `memory`.
+
+## Memory
+
+Victor wrappers inject lightweight local memory into agent/web prompts:
+
+- `memory/machine.md`: hardware and environment facts.
+- `memory/preferences.md`: workflow and behavior preferences.
+- `memory/benchmarks.md`: local benchmark observations.
+
+This is prompt-injected memory, not model training. Edit these files when the machine, preferences, or benchmark baseline changes.
 
 ## Profiles
 

@@ -7,6 +7,7 @@ import {
   askOllama,
   buildWebAnswerPrompt,
   collectSources,
+  loadMemory,
   loadConfig,
   searchDuckDuckGo
 } from "./victor_lib.ts";
@@ -33,8 +34,10 @@ async function main(): Promise<void> {
     throw new Error("Search worked, but no readable source text was fetched.");
   }
 
+  const memory = await loadMemory(config);
+
   console.log(`Fetched ${sources.length} source(s). Asking ${config.victorName}...`);
-  const answer = await askOllama(config, buildWebAnswerPrompt(query, sources));
+  const answer = await askOllama(config, buildWebAnswerPrompt(query, sources, memory));
 
   console.log();
   console.log("Sources:");

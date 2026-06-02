@@ -25,6 +25,7 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Main benchmark script: `scripts/benchmark.sh`.
 - Web-backed chat wrapper: `src/web_chat.ts`.
 - Agent-style web router: `src/agent_chat.ts`.
+- Prompt-injected memory files: `memory/*.md`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
 user handles final `git add`, `git commit`, and `git push` unless explicitly asking the agent to do it.
@@ -49,6 +50,7 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 - GPU/performance diagnostics are manual.
 - Model comparison requires running profile commands by hand.
 - Web access is a wrapper-driven workflow, not built into the Ollama model itself.
+- Memory is prompt-injected from Markdown files, not model training or persistent hidden state.
 
 ## Planned Work
 
@@ -217,6 +219,25 @@ Keep this workflow source-grounded:
 - do not store private queries or raw web logs by default;
 - do not pretend the model has autonomous browser access;
 - prefer dependency-light TypeScript unless a search/RAG dependency clearly earns its complexity.
+
+### 7. Memory Workflow
+
+The wrappers load Markdown memory files before asking Victor:
+
+```text
+memory/machine.md
+memory/preferences.md
+memory/benchmarks.md
+```
+
+Use memory for stable local facts and preferences:
+
+- machine hardware and driver facts;
+- local benchmark results;
+- workflow preferences;
+- repo operating rules.
+
+Do not store secrets, private prompts, API keys, or unrelated personal information in memory.
 
 ## Acceptance Criteria For The Next Milestone
 

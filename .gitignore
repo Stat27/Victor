@@ -12,6 +12,8 @@ logs/
 tmp/
 *.log
 benchmark-results/
+dist/
+coverage/
 
 # Local environment overrides
 .env
@@ -22,6 +24,15 @@ benchmark-results/
 .idea/
 .vscode/
 *~
+
+# Node/TypeScript noise
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+.npm/
+.tsbuildinfo
 
 # Python/cache noise if helper tooling is added later
 __pycache__/

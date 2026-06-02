@@ -6,5 +6,8 @@
   "scripts": {
     "agent": "node src/agent_chat.ts",
     "web": "node src/web_chat.ts"
+  },
+  "devDependencies": {
+    "@types/node": "^25.9.1"
   }
 }

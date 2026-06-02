@@ -5,8 +5,10 @@ declare const process: {
 
 import {
   askOllama,
+  buildLocalAnswerPrompt,
   buildWebAnswerPrompt,
   collectSources,
+  loadMemory,
   loadConfig,
   searchDuckDuckGo
 } from "./victor_lib.ts";
@@ -20,6 +22,7 @@ type AgentDecision = {
 
 async function main(): Promise<void> {
   const config = loadConfig();
+  const memory = await loadMemory(config);
   const question = process.argv.slice(2).join(" ").trim();
 
   if (!question || question === "--help" || question === "-h") {
@@ -28,11 +31,11 @@ async function main(): Promise<void> {
   }
 
   console.log(`Asking ${config.victorName} whether web search is needed...`);
-  const decision = await decideSearch(config, question);
+  const decision = await decideSearch(config, question, memory);
   console.log(`Decision: ${decision.needsWeb ? "search" : "local"} - ${decision.reason}`);
 
   if (!decision.needsWeb) {
-    const answer = await askOllama(config, question);
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -47,7 +50,7 @@ async function main(): Promise<void> {
 
   if (results.length === 0) {
     console.log("No search results found. Falling back to local answer.");
-    const answer = await askOllama(config, question);
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -58,7 +61,7 @@ async function main(): Promise<void> {
 
   if (sources.length === 0) {
     console.log("No readable source text fetched. Falling back to local answer.");
-    const answer = await askOllama(config, question);
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -66,7 +69,7 @@ async function main(): Promise<void> {
   }
 
   console.log(`Fetched ${sources.length} source(s). Asking ${config.victorName}...`);
-  const answer = await askOllama(config, buildWebAnswerPrompt(question, sources));
+  const answer = await askOllama(config, buildWebAnswerPrompt(question, sources, memory));
 
   console.log();
   console.log("Sources:");
@@ -80,7 +83,7 @@ async function main(): Promise<void> {
   console.log(answer);
 }
 
-async function decideSearch(config: ReturnType<typeof loadConfig>, question: string): Promise<AgentDecision> {
+async function decideSearch(config: ReturnType<typeof loadConfig>, question: string, memory: string): Promise<AgentDecision> {
   const today = new Date().toISOString().slice(0, 10);
   const prompt = `Today is ${today}.
 
@@ -88,6 +91,7 @@ Decide whether answering this user question requires current web information.
 
 Use web search when the answer depends on recent facts, current docs, prices, releases, rankings, news, model availability, or exact source citations.
 Do not use web search for stable general knowledge, local repo workflow, or questions that can be answered from the user's provided context.
+Do not use web search only to rediscover facts already present in local memory. Use web search to complement or verify unstable/current facts.
 
 Search query rules:
 - Do not include an old year like 2024 or 2025 unless the user explicitly asks about that year.
@@ -103,6 +107,9 @@ Return only compact JSON with this exact shape:
   "queries": ["primary query", "backup query"],
   "reason": "short reason"
 }
+
+Local memory:
+${memory || "(none)"}
 
 Question:
 ${question}`;
