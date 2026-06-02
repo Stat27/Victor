@@ -58,6 +58,24 @@ By default, the laptop profile sends `think: false` to Ollama so daily-chat benc
 VICTOR_PROFILE=profiles/laptop-8gb-thinking.env ./scripts/benchmark.sh evals/reasoning.jsonl
 ```
 
+## Web Access
+
+Victor does not browse by itself. The TypeScript web wrapper searches the web, fetches readable source excerpts, and passes those sources to the local Ollama model with citation instructions.
+
+Ask a web-backed question:
+
+```bash
+npm run web -- "latest Ollama tool calling docs"
+```
+
+Useful environment variables:
+
+- `OLLAMA_HOST`: local Ollama API URL, default `http://localhost:11434`.
+- `VICTOR_NAME`: local model alias, default `victor`.
+- `THINK`: request thinking setting, default `false`.
+- `WEB_MAX_RESULTS`: search results to fetch, default `5`.
+- `WEB_MAX_CHARS`: source excerpt size, default `1800`.
+
 ## Profiles
 
 The scripts read `VICTOR_PROFILE`, defaulting to:

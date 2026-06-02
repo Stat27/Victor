@@ -23,6 +23,7 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Reasoning comparison profile: `profiles/laptop-8gb-thinking.env`.
 - Default Victor mode: `daily`.
 - Main benchmark script: `scripts/benchmark.sh`.
+- Web-backed chat wrapper: `src/web_chat.ts`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
 user handles final `git add`, `git commit`, and `git push` unless explicitly asking the agent to do it.
@@ -46,6 +47,7 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 - Evals are still generic and do not fully represent user's real workflow.
 - GPU/performance diagnostics are manual.
 - Model comparison requires running profile commands by hand.
+- Web access is a wrapper-driven workflow, not built into the Ollama model itself.
 
 ## Planned Work
 
@@ -186,6 +188,24 @@ It should capture:
 - timestamp.
 
 Use this before and during benchmark runs to explain slow results.
+
+### 6. Web Access Workflow
+
+`src/web_chat.ts` gives Victor web-backed answers by fetching source excerpts and passing them to the local Ollama chat API.
+
+Target usage:
+
+```bash
+npm run web -- "latest Ollama tool calling docs"
+```
+
+Keep this workflow source-grounded:
+
+- cite sources in answers;
+- keep fetched excerpts compact;
+- do not store private queries or raw web logs by default;
+- do not pretend the model has autonomous browser access;
+- prefer dependency-light TypeScript unless a search/RAG dependency clearly earns its complexity.
 
 ## Acceptance Criteria For The Next Milestone
 
