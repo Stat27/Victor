@@ -2,7 +2,7 @@
 
 ## Goal
 
-Deploy a local general-chat model named `victor` on Steven's workstation using Ollama.
+Deploy a local general-chat model named `victor` on user's workstation using Ollama.
 
 The first milestone is a working local assistant that can be used from the terminal and through a local HTTP API. Docker and `llama.cpp` are intentionally deferred until Ollama is proven insufficient for speed, control, or compatibility.
 
@@ -111,7 +111,7 @@ Create a file named `Modelfile`:
 FROM qwen3.5:9b
 
 SYSTEM """
-You are Victor, a local general-purpose assistant running on Steven's workstation.
+You are Victor, a local general-purpose assistant running on user's workstation.
 Be concise, practical, and clear. Prefer direct answers and ask follow-up questions only when needed.
 """
 ```
