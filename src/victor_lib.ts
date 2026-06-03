@@ -2,8 +2,7 @@ declare const process: {
   env: Record<string, string | undefined>;
 };
 
-import { readFile } from "node:fs/promises";
-import { appendFile } from "node:fs/promises";
+import { appendFile, mkdir, readFile } from "node:fs/promises";
 import { join } from "node:path";
 
 export type SearchResult = {
@@ -19,6 +18,7 @@ export type VictorConfig = {
   ollamaHost: string;
   victorName: string;
   think: boolean | string;
+  autoMemory: boolean;
   maxResults: number;
   maxCharsPerSource: number;
   memoryDir: string;
@@ -36,6 +36,7 @@ export function loadConfig(): VictorConfig {
     ollamaHost: process.env.OLLAMA_HOST ?? "http://localhost:11434",
     victorName: process.env.VICTOR_NAME ?? "victor",
     think: parseThink(process.env.THINK ?? "false"),
+    autoMemory: parseBoolean(process.env.VICTOR_AUTO_MEMORY ?? "true"),
     maxResults: parsePositiveInt(process.env.WEB_MAX_RESULTS, 5),
     maxCharsPerSource: parsePositiveInt(process.env.WEB_MAX_CHARS, 1800),
     memoryDir: process.env.VICTOR_MEMORY_DIR ?? "memory"
@@ -43,7 +44,7 @@ export function loadConfig(): VictorConfig {
 }
 
 export async function loadMemory(config: VictorConfig): Promise<string> {
-  const files = ["machine.md", "preferences.md", "benchmarks.md"];
+  const files = ["machine.md", "preferences.md", "projects.md", "benchmarks.md", "facts.md"];
   const sections: string[] = [];
 
   for (const file of files) {
@@ -69,6 +70,7 @@ export async function appendMemory(config: VictorConfig, file: string, note: str
     throw new Error("Memory note is empty.");
   }
 
+  await mkdir(config.memoryDir, { recursive: true });
   await appendFile(join(config.memoryDir, file), `\n- ${trimmed}\n`, "utf8");
 }
 
@@ -294,6 +296,10 @@ function parseThink(input: string): boolean | string {
   }
 
   return input;
+}
+
+function parseBoolean(input: string): boolean {
+  return !["0", "false", "no", "off"].includes(input.toLowerCase());
 }
 
 function parsePositiveInt(input: string | undefined, fallback: number): number {

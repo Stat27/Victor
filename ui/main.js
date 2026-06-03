@@ -30,6 +30,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const raw = await invoke("ask_victor", { message: prompt });
     updateMessage(pending, parseAgentOutput(raw));
+    await refreshMemoryStatus();
   } catch (error) {
     updateMessage(pending, { answer: `Error: ${String(error)}`, meta: [] });
   } finally {
@@ -198,6 +199,7 @@ function parseAgentOutput(raw) {
   const decision = raw.match(/Decision:\s*(.*)/);
   const fetched = raw.match(/Fetched\s+(\d+)\s+source\(s\)/);
   const search = raw.match(/Searching web for:\s*(.*)/);
+  const memory = raw.match(/Memory:\s*(.*)/);
 
   if (decision?.[1]) {
     const [route, reason] = decision[1].split(/\s+-\s+/, 2);
@@ -213,6 +215,10 @@ function parseAgentOutput(raw) {
 
   if (fetched?.[1]) {
     meta.push(`${fetched[1]} sources`);
+  }
+
+  if (memory?.[1]) {
+    meta.push(`Memory: ${memory[1].trim()}`);
   }
 
   const marker = "\nAnswer:\n";

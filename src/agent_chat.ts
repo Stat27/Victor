@@ -4,6 +4,7 @@ declare const process: {
 };
 
 import {
+  appendMemory,
   askOllama,
   buildLocalAnswerPrompt,
   buildWebAnswerPrompt,
@@ -18,6 +19,11 @@ type AgentDecision = {
   query: string;
   queries: string[];
   reason: string;
+};
+
+type MemoryDecision = {
+  file: string;
+  note: string;
 };
 
 async function main(): Promise<void> {
@@ -36,6 +42,8 @@ async function main(): Promise<void> {
 
   if (!decision.needsWeb) {
     const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const savedMemory = await rememberAfterTurn(config, question, answer, memory);
+    printMemoryResult(savedMemory);
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -51,6 +59,8 @@ async function main(): Promise<void> {
   if (results.length === 0) {
     console.log("No search results found. Falling back to local answer.");
     const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const savedMemory = await rememberAfterTurn(config, question, answer, memory);
+    printMemoryResult(savedMemory);
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -62,6 +72,8 @@ async function main(): Promise<void> {
   if (sources.length === 0) {
     console.log("No readable source text fetched. Falling back to local answer.");
     const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const savedMemory = await rememberAfterTurn(config, question, answer, memory);
+    printMemoryResult(savedMemory);
     console.log();
     console.log("Answer:");
     console.log(answer);
@@ -70,6 +82,8 @@ async function main(): Promise<void> {
 
   console.log(`Fetched ${sources.length} source(s). Asking ${config.victorName}...`);
   const answer = await askOllama(config, buildWebAnswerPrompt(question, sources, memory));
+  const savedMemory = await rememberAfterTurn(config, question, answer, memory);
+  printMemoryResult(savedMemory);
 
   console.log();
   console.log("Sources:");
@@ -81,6 +95,103 @@ async function main(): Promise<void> {
   console.log();
   console.log("Answer:");
   console.log(answer);
+}
+
+async function rememberAfterTurn(
+  config: ReturnType<typeof loadConfig>,
+  question: string,
+  answer: string,
+  memory: string
+): Promise<MemoryDecision | null> {
+  if (!config.autoMemory) {
+    return null;
+  }
+
+  const prompt = `Decide whether this completed assistant turn contains exactly one durable memory worth saving.
+
+Save memory only when it will help Victor behave as a personal assistant in future sessions.
+Good memory:
+- durable user preferences
+- durable machine or environment facts
+- durable project goals, implementation state, or decisions
+- benchmark results or local performance observations
+- facts the user explicitly asks Victor to remember
+
+Do not save:
+- secrets, credentials, tokens, private keys, or addresses
+- temporary conversational details
+- generic information from web sources
+- speculation or weak claims
+- duplicate information already present in memory
+
+Allowed files:
+- machine.md
+- preferences.md
+- projects.md
+- benchmarks.md
+- facts.md
+
+Return only compact JSON:
+{
+  "file": "projects.md",
+  "note": "short durable note written in third person"
+}
+
+Return {"file":"","note":""} if nothing should be saved.
+
+Existing memory:
+${memory || "(none)"}
+
+User turn:
+${question}
+
+Assistant answer:
+${answer}`;
+
+  const raw = await askOllama(config, prompt);
+  const parsed = parseMemoryDecision(raw);
+
+  if (!parsed) {
+    return null;
+  }
+
+  await appendMemory(config, parsed.file, parsed.note);
+  return parsed;
+}
+
+function parseMemoryDecision(raw: string): MemoryDecision | null {
+  const jsonText = extractJson(raw);
+
+  if (!jsonText) {
+    return null;
+  }
+
+  try {
+    const parsed = JSON.parse(jsonText) as Partial<MemoryDecision>;
+    const file = typeof parsed.file === "string" ? parsed.file.trim() : "";
+    const note = typeof parsed.note === "string" ? parsed.note.trim() : "";
+
+    if (!file || !note) {
+      return null;
+    }
+
+    if (!["machine.md", "preferences.md", "projects.md", "benchmarks.md", "facts.md"].includes(file)) {
+      return null;
+    }
+
+    return { file, note };
+  } catch {
+    return null;
+  }
+}
+
+function printMemoryResult(memory: MemoryDecision | null): void {
+  if (memory) {
+    console.log(`Memory: saved to ${memory.file} - ${memory.note}`);
+    return;
+  }
+
+  console.log("Memory: no durable update");
 }
 
 async function decideSearch(config: ReturnType<typeof loadConfig>, question: string, memory: string): Promise<AgentDecision> {
@@ -295,6 +406,7 @@ Environment:
   OLLAMA_HOST       Default: http://localhost:11434
   VICTOR_NAME       Default: victor
   THINK             Default: false
+  VICTOR_AUTO_MEMORY Default: true
   WEB_MAX_RESULTS   Default: 5
   WEB_MAX_CHARS     Default: 1800
 `);

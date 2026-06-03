@@ -27,7 +27,13 @@ async fn ask_victor(message: String) -> Result<String, String> {
 #[tauri::command]
 fn load_memory() -> Result<String, String> {
     let root = repo_root()?;
-    let files = ["machine.md", "preferences.md", "benchmarks.md", "facts.md"];
+    let files = [
+        "machine.md",
+        "preferences.md",
+        "projects.md",
+        "benchmarks.md",
+        "facts.md",
+    ];
     let mut sections = Vec::new();
 
     for file in files {
