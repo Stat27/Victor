@@ -12,6 +12,26 @@ The goal is not to commit model weights. The repo captures the repeatable proces
 - Default profile: `profiles/laptop-8gb.env`
 - Target machine: Linux laptop/workstation with NVIDIA GPU and about 8 GB VRAM
 
+## Repository Layout
+
+```text
+apps/
+  desktop/
+    frontend/      Native desktop UI assets loaded by Tauri
+    src-tauri/     Rust/Tauri shell and native commands
+packages/
+  agent/
+    src/           TypeScript agent, web router, chat core, and Ollama helpers
+docs/
+  plans/           Long-form planning and roadmap documents
+memory/            Durable prompt-injected memory
+profiles/          Runtime/model profiles
+modes/             Victor behavior mode Modelfiles
+evals/             Benchmark/evaluation prompt sets
+runs/              Recorded benchmark and model run notes
+scripts/           Setup, model creation, test, and benchmark scripts
+```
+
 ## Quick Start
 
 Install Ollama:

@@ -7,7 +7,7 @@ async fn ask_victor(message: String) -> Result<String, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let root = repo_root()?;
         let output = Command::new("node")
-            .arg("src/agent_chat.ts")
+            .arg("packages/agent/src/agent_chat.ts")
             .arg(message)
             .current_dir(&root)
             .output()
@@ -76,14 +76,15 @@ pub fn run() {
 }
 
 fn repo_root() -> Result<PathBuf, String> {
-    let current = std::env::current_dir().map_err(|error| error.to_string())?;
+    let mut current = std::env::current_dir().map_err(|error| error.to_string())?;
 
-    if current.ends_with("src-tauri") {
-        return current
-            .parent()
-            .map(PathBuf::from)
-            .ok_or_else(|| "failed to resolve repository root".to_string());
+    loop {
+        if current.join("package.json").exists() && current.join("memory").exists() {
+            return Ok(current);
+        }
+
+        if !current.pop() {
+            return Err("failed to resolve repository root".to_string());
+        }
     }
-
-    Ok(current)
 }

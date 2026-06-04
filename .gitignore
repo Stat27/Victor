@@ -36,8 +36,8 @@ pnpm-debug.log*
 .tsbuildinfo
 
 # Tauri/Rust build output
-src-tauri/gen/
-src-tauri/target/
+apps/desktop/src-tauri/gen/
+apps/desktop/src-tauri/target/
 
 # Python/cache noise if helper tooling is added later
 __pycache__/
