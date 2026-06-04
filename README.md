@@ -72,6 +72,20 @@ Run a small benchmark prompt set:
 
 The benchmark prints each answer plus Ollama timing metrics, including total duration, prompt evaluation speed, generated token count, and generation tokens per second.
 
+Write a clean Markdown run note while still printing the benchmark to the terminal:
+
+```bash
+WRITE_RUN=1 ./scripts/benchmark.sh evals/general_chat.jsonl
+```
+
+Run notes are written to:
+
+```text
+runs/YYYY-MM-DD-<profile>-<eval>.md
+```
+
+If a same-day run note already exists, the script writes a numbered file instead of overwriting it. The default run note includes configuration, per-prompt timing and generation metrics, summary tokens/sec, and a placeholder for human quality notes. Set `WRITE_RUN_DEBUG=1` with `WRITE_RUN=1` only when you also want raw Ollama JSON included in the Markdown.
+
 By default, the laptop profile sends `think: false` to Ollama so daily-chat benchmarks measure final-answer speed instead of hidden reasoning traces. To benchmark thinking mode for reasoning tasks:
 
 ```bash
@@ -130,6 +144,8 @@ Useful environment variables:
 - `OLLAMA_HOST`: local Ollama API URL, default `http://localhost:11434`.
 - `VICTOR_NAME`: local model alias, default `victor`.
 - `THINK`: request thinking setting, default `false`.
+- `WRITE_RUN`: set to `1` to write a structured benchmark run note.
+- `WRITE_RUN_DEBUG`: set to `1` with `WRITE_RUN=1` to include raw Ollama JSON in the run note.
 - `WEB_MAX_RESULTS`: search results to fetch, default `5`.
 - `WEB_MAX_CHARS`: source excerpt size, default `1800`.
 - `VICTOR_MEMORY_DIR`: memory directory, default `memory`.
@@ -203,8 +219,8 @@ VICTOR_MODE=deployment ./scripts/create_victor.sh
 2. Pull the model with `scripts/pull_model.sh`.
 3. Pick a Victor mode and create or recreate Victor with `scripts/create_victor.sh`.
 4. Run `scripts/test_api.sh`.
-5. Run `scripts/benchmark.sh` and compare generation tokens/sec.
-6. Record observations in `runs/`.
+5. Run `WRITE_RUN=1 ./scripts/benchmark.sh <eval-file>` and compare generation tokens/sec.
+6. Add human quality observations to the generated note in `runs/`.
 7. Promote the best profile and `Modelfile` settings.
 
 ## Portability

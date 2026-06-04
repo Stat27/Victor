@@ -45,8 +45,8 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 
 ## Current Issues To Address
 
-- Benchmark results are still copied into run notes manually.
-- Run notes can become messy because raw terminal output is pasted into Markdown.
+- Benchmark run notes can be generated with `WRITE_RUN=1`, but human quality notes still need manual review.
+- Raw terminal output no longer needs to be pasted into Markdown for standard benchmark notes.
 - Victor behavior modes exist, but they still need benchmark comparison and refinement.
 - Evals are still generic and do not fully represent user's real workflow.
 - GPU/performance diagnostics are manual.
@@ -59,9 +59,9 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 
 ### 1. Automatic Run Logging
 
-Upgrade `scripts/benchmark.sh` so it can write structured results automatically.
+`scripts/benchmark.sh` can write structured results automatically.
 
-Target behavior:
+Supported behavior:
 
 ```bash
 ./scripts/benchmark.sh evals/general_chat.jsonl
@@ -78,6 +78,8 @@ Expected output file:
 ```text
 runs/YYYY-MM-DD-<profile>-<eval>.md
 ```
+
+If the same-day output already exists, the script writes a numbered file instead of overwriting the existing run note.
 
 The generated run file should include:
 
