@@ -2,7 +2,7 @@
 
 ## Project Goal
 
-Victor is a reproducible local model deployment and iteration repo.
+Victor is a reproducible local model deployment, iteration, and personal-agent repo.
 
 The repo should help user:
 
@@ -10,9 +10,10 @@ The repo should help user:
 - compare model/profile choices on the same machine;
 - tune Victor for user's actual workstation and engineering workflow;
 - record clean benchmark and quality results over time;
-- reproduce the setup on other machines without committing model weights.
+- reproduce the setup on other machines without committing model weights;
+- grow Victor into a personal local assistant with approved awareness of memory, sessions, repo state, runs, and machine/runtime context.
 
-Do not treat this as only an Ollama install repo. The higher-level goal is to build a local assistant iteration process.
+Do not treat this as only an Ollama install repo. The higher-level goal is to build a local assistant iteration process and eventually a personal assistant that can remember, inspect approved context, and continue work across sessions.
 
 ## Current Baseline
 
@@ -23,9 +24,9 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Reasoning comparison profile: `profiles/laptop-8gb-thinking.env`.
 - Default Victor mode: `daily`.
 - Main benchmark script: `scripts/benchmark.sh`.
-- Web-backed chat wrapper: `src/web_chat.ts`.
-- Agent-style web router: `src/agent_chat.ts`.
-- Interactive chat with approved memory writes: `src/chat.ts`.
+- Web-backed chat wrapper: `packages/agent/src/web_chat.ts`.
+- Agent-style web router: `packages/agent/src/agent_chat.ts`.
+- Interactive chat with approved memory writes: `packages/agent/src/chat.ts`.
 - Prompt-injected memory files: `memory/*.md`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
@@ -52,6 +53,7 @@ user handles final `git add`, `git commit`, and `git push` unless explicitly ask
 - Model comparison requires running profile commands by hand.
 - Web access is a wrapper-driven workflow, not built into the Ollama model itself.
 - Memory is prompt-injected from Markdown files, not model training or persistent hidden state.
+- Personal-agent planning lives in `docs/plans/PERSONAL_AGENT_PLAN.md`.
 
 ## Planned Work
 
@@ -195,7 +197,7 @@ Use this before and during benchmark runs to explain slow results.
 
 ### 6. Web Access Workflow
 
-`src/web_chat.ts` gives Victor web-backed answers by fetching source excerpts and passing them to the local Ollama chat API.
+`packages/agent/src/web_chat.ts` gives Victor web-backed answers by fetching source excerpts and passing them to the local Ollama chat API.
 
 Target usage:
 
@@ -203,7 +205,7 @@ Target usage:
 npm run web -- "latest Ollama tool calling docs"
 ```
 
-`src/agent_chat.ts` adds a routing step where Victor decides whether the question needs current web information and proposes a search query.
+`packages/agent/src/agent_chat.ts` adds a routing step where Victor decides whether the question needs current web information and proposes a search query.
 
 Target usage:
 
