@@ -88,13 +88,13 @@ function addMessage(role, content) {
   item.className = `message ${role}`;
   renderMessage(item, content);
   messages.appendChild(item);
-  messages.scrollTop = messages.scrollHeight;
+  scrollMessagesToBottom();
   return item;
 }
 
 function updateMessage(item, content) {
   renderMessage(item, content);
-  messages.scrollTop = messages.scrollHeight;
+  scrollMessagesToBottom();
 }
 
 function renderMessage(item, content) {
@@ -285,6 +285,13 @@ function syncPromptInput() {
   promptCount.textContent = String(promptInput.value.length);
   promptInput.style.height = "auto";
   promptInput.style.height = `${Math.min(promptInput.scrollHeight, 190)}px`;
+  scrollMessagesToBottom();
+}
+
+function scrollMessagesToBottom() {
+  window.requestAnimationFrame(() => {
+    messages.scrollTo({ top: messages.scrollHeight, behavior: "auto" });
+  });
 }
 
 async function mockInvoke(command, payload = {}) {
