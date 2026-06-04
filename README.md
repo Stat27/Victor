@@ -140,6 +140,7 @@ Victor wrappers inject lightweight local memory into agent/web prompts:
 
 - `memory/machine.md`: hardware and environment facts.
 - `memory/preferences.md`: workflow and behavior preferences.
+- `memory/projects.md`: active project goals, state, and decisions.
 - `memory/benchmarks.md`: local benchmark observations.
 - `memory/facts.md`: approved durable notes.
 
@@ -230,4 +231,5 @@ Adjust `VICTOR_PROFILE` if the target GPU has less or more VRAM.
 - API keys or credentials
 - system driver configuration
 
-See `LOCAL_MODEL_DEPLOY_PLAN.md` for the planning notes and model ranking.
+See `docs/plans/LOCAL_MODEL_DEPLOY_PLAN.md` for the planning notes and model ranking.
+See `docs/plans/PERSONAL_AGENT_PLAN.md` for the personal-agent roadmap.
