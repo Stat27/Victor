@@ -1,5 +1,6 @@
 declare const process: {
   env: Record<string, string | undefined>;
+  cwd(): string;
 };
 
 import { appendFile, mkdir, readFile } from "node:fs/promises";
@@ -66,11 +67,40 @@ export async function loadMemory(config: VictorConfig): Promise<string> {
   return sections.join("\n\n---\n\n");
 }
 
+export async function loadRepoContext(question: string): Promise<string> {
+  if (!wantsRepoContext(question)) {
+    return "";
+  }
+
+  const files = repoContextFiles(question);
+  const sections: string[] = [];
+  let remainingChars = 14000;
+
+  for (const file of files) {
+    if (remainingChars <= 0) {
+      break;
+    }
+
+    try {
+      const content = await readFile(join(process.cwd(), file), "utf8");
+      const trimmed = content.trim();
+      const excerpt = trimmed.slice(0, remainingChars);
+      sections.push(`File: ${file}\n${excerpt}`);
+      remainingChars -= excerpt.length;
+    } catch {
+      // Repo context files are optional so moved or partial clones still run.
+    }
+  }
+
+  return sections.join("\n\n---\n\n");
+}
+
 export async function decideWebSearch(
   config: VictorConfig,
   question: string,
   memory: string,
-  recentChat = ""
+  recentChat = "",
+  repoContext = ""
 ): Promise<AgentDecision> {
   const today = new Date().toISOString().slice(0, 10);
   const prompt = `Today is ${today}.
@@ -80,6 +110,7 @@ Decide whether answering this user question requires current web information.
 Use web search when the answer depends on recent facts, current docs, prices, releases, rankings, news, model availability, or exact source citations.
 Do not use web search for stable general knowledge, local repo workflow, or questions that can be answered from the user's provided context.
 Do not use web search only to rediscover facts already present in local memory. Use web search to complement or verify unstable/current facts.
+If approved repo context answers a question about this repository, workflow, scripts, docs, or roadmap, answer locally.
 
 Search query rules:
 - Do not include an old year like 2024 or 2025 unless the user explicitly asks about that year.
@@ -101,6 +132,9 @@ ${memory || "(none)"}
 
 Recent chat:
 ${recentChat || "(none)"}
+
+Approved repo context:
+${repoContext || "(none)"}
 
 Question:
 ${question}`;
@@ -205,16 +239,22 @@ export async function collectSources(results: SearchResult[], maxCharsPerSource:
 }
 
 export async function askOllama(config: VictorConfig, prompt: string): Promise<string> {
-  const response = await fetch(`${config.ollamaHost}/api/chat`, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      model: config.victorName,
-      messages: [{ role: "user", content: prompt }],
-      think: config.think,
-      stream: false
-    })
-  });
+  let response: Response;
+
+  try {
+    response = await fetch(`${config.ollamaHost}/api/chat`, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({
+        model: config.victorName,
+        messages: [{ role: "user", content: prompt }],
+        think: config.think,
+        stream: false
+      })
+    });
+  } catch (error) {
+    throw new Error(`Could not reach Ollama at ${config.ollamaHost}: ${String(error)}`);
+  }
 
   if (!response.ok) {
     throw new Error(`Ollama API failed: ${response.status} ${response.statusText}`);
@@ -240,32 +280,37 @@ ${source.excerpt}`;
     .join("\n\n---\n\n");
 }
 
-export function buildLocalAnswerPrompt(question: string, memory: string): string {
+export function buildLocalAnswerPrompt(question: string, memory: string, repoContext = ""): string {
   const takeRule = wantsTake(question)
     ? "- The user is asking for a take/opinion/recommendation. Give a brief factual grounding, then a clearly labeled practical take."
     : "- If the user asks for a recommendation, give one with a short reason.";
 
-  return `Answer the user's question using the available local memory when relevant.
+  return `Answer the user's question using the available local memory and approved repo context when relevant.
 
 Rules:
 - Prefer concise, practical answers.
 - If local memory directly applies, use it.
-- Do not claim memory contains facts it does not contain.
+- If approved repo context directly answers a repo/workflow question, use it.
+- Do not claim memory or repo context contains facts it does not contain.
+- Do not say you cannot access the repo when approved repo context is provided.
 ${takeRule}
 
 Local memory:
 ${memory || "(none)"}
 
+Approved repo context:
+${repoContext || "(none)"}
+
 Question:
 ${question}`;
 }
 
-export function buildWebAnswerPrompt(question: string, sources: Source[], memory = ""): string {
+export function buildWebAnswerPrompt(question: string, sources: Source[], memory = "", repoContext = ""): string {
   const takeRule = wantsTake(question)
     ? "- The user is asking for a take/opinion/recommendation. First ground the facts with citations, then include a clearly labeled \"My take\" section."
     : "- If the user asks for a recommendation, give one after grounding it in sources and memory.";
 
-  return `Answer the user's question using the web sources below.
+  return `Answer the user's question using the web sources and approved local context below.
 
 Rules:
 - Cite sources with bracketed source numbers like [1] or [2].
@@ -275,6 +320,7 @@ Rules:
 - Distinguish GPU VRAM from system RAM. Do not treat an 8 GB RAM source as evidence for an 8 GB NVIDIA VRAM recommendation.
 - If the user's observed local benchmark conflicts with generic web advice, say that the local benchmark is more relevant for this machine.
 - Use local memory when it is more specific than generic web advice.
+- Use approved repo context when it is more specific than generic web advice.
 ${takeRule}
 
 Question:
@@ -282,6 +328,9 @@ ${question}
 
 Local memory:
 ${memory || "(none)"}
+
+Approved repo context:
+${repoContext || "(none)"}
 
 Sources:
 ${formatSources(sources)}`;
@@ -299,6 +348,40 @@ function wantsTake(question: string): boolean {
     lower.includes("do you recommend") ||
     lower.includes("recommendation")
   );
+}
+
+function wantsRepoContext(question: string): boolean {
+  const lower = question.toLowerCase();
+  return (
+    lower.includes("this repo") ||
+    lower.includes("the repo") ||
+    lower.includes("repository") ||
+    lower.includes("current workflow") ||
+    lower.includes("victor workflow") ||
+    lower.includes("project workflow") ||
+    lower.includes("repo workflow") ||
+    lower.includes("summarize this") ||
+    lower.includes("how is victor set up") ||
+    lower.includes("how victor is set up") ||
+    lower.includes("what changed") ||
+    lower.includes("roadmap") ||
+    lower.includes("plan") ||
+    lower.includes("scripts/") ||
+    lower.includes("benchmark") ||
+    lower.includes("create_victor") ||
+    lower.includes("memory workflow")
+  );
+}
+
+function repoContextFiles(question: string): string[] {
+  const lower = question.toLowerCase();
+  const files = ["README.md", "AGENTS.md", "package.json", "packages/agent/README.md", "docs/README.md"];
+
+  if (lower.includes("roadmap") || lower.includes("plan") || lower.includes("personal agent")) {
+    files.push("docs/plans/PERSONAL_AGENT_PLAN.md");
+  }
+
+  return files;
 }
 
 async function fetchText(url: string): Promise<string> {

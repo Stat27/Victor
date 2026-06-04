@@ -7,6 +7,7 @@ import {
   decideWebSearch,
   loadConfig,
   loadMemory,
+  loadRepoContext,
   normalizeSearchQueries,
   rankSearchResults,
   type SearchResult,
@@ -45,10 +46,11 @@ export async function answerChatTurn(
   history: ChatMessage[]
 ): Promise<ChatTurnResult> {
   const memory = await loadMemory(config);
-  const route = await decideWebSearch(config, question, memory, formatHistory(history));
+  const repoContext = await loadRepoContext(question);
+  const route = await decideWebSearch(config, question, memory, formatHistory(history), repoContext);
 
   if (!route.needsWeb) {
-    const answer = await answerLocal(config, question, memory, history);
+    const answer = await answerLocal(config, question, memory, repoContext, history);
     return { answer, route, sources: [] };
   }
 
@@ -57,7 +59,7 @@ export async function answerChatTurn(
   const sources = await collectSources(results, config.maxCharsPerSource);
 
   if (sources.length === 0) {
-    const answer = await answerLocal(config, question, memory, history);
+    const answer = await answerLocal(config, question, memory, repoContext, history);
     return {
       answer,
       route: {
@@ -70,7 +72,7 @@ export async function answerChatTurn(
     };
   }
 
-  const prompt = `${buildWebAnswerPrompt(question, sources, memory)}
+  const prompt = `${buildWebAnswerPrompt(question, sources, memory, repoContext)}
 
 Recent chat:
 ${formatHistory(history)}`;
@@ -166,9 +168,10 @@ async function answerLocal(
   config: ReturnType<typeof loadConfig>,
   question: string,
   memory: string,
+  repoContext: string,
   history: ChatMessage[]
 ): Promise<string> {
-  const prompt = `${buildLocalAnswerPrompt(question, memory)}
+  const prompt = `${buildLocalAnswerPrompt(question, memory, repoContext)}
 
 Recent chat:
 ${formatHistory(history)}`;

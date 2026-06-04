@@ -110,6 +110,8 @@ npm run agent -- "how do I recreate victor in debug mode?"
 
 `npm run web` always searches. `npm run agent` first asks Victor whether current web information is needed; if yes, Victor proposes the search query and the wrapper fetches sources before answering.
 
+For repo/workflow questions, the agent injects approved local context from allowlisted project files such as `README.md`, `AGENTS.md`, `package.json`, `packages/agent/README.md`, and `docs/README.md`. It does not scan arbitrary files, logs, or secrets.
+
 One-shot agent runs do not write memory by default. Set `VICTOR_AUTO_MEMORY=1` only when you want `npm run agent` to save one durable memory update after a turn. Interactive chat memory writes stay explicit through `/remember`, `/propose-memory`, and `/approve`.
 
 Start an interactive chat session:

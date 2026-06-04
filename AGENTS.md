@@ -30,11 +30,11 @@ Do not treat this as only an Ollama install repo. The higher-level goal is to bu
 - Prompt-injected memory files: `memory/*.md`.
 - First run note: `runs/2026-06-01-qwen3.5-9b.md`.
 
-user handles final `git add`, `git commit`, and `git push` unless explicitly asking the agent to do it.
+user handles final `git add`, `git commit`, and `git push` unless explicitly asking the agent to do those exact Git actions.
 
 ## Working Rules
 
-- Do not commit or push unless user explicitly asks.
+- Do not commit or push unless user explicitly asks for a commit or push. Treat phrases like "go ahead" as permission to implement and validate only, not permission to commit.
 - Do not download models unless user explicitly asks.
 - Do not overwrite run notes or user-entered benchmark results without asking.
 - Prefer small, focused changes that improve the iteration loop.

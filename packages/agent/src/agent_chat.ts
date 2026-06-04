@@ -13,6 +13,7 @@ import {
   decideWebSearch,
   loadMemory,
   loadConfig,
+  loadRepoContext,
   normalizeSearchQueries,
   rankSearchResults,
   searchDuckDuckGo
@@ -27,6 +28,7 @@ async function main(): Promise<void> {
   const config = loadConfig();
   const memory = await loadMemory(config);
   const question = process.argv.slice(2).join(" ").trim();
+  const repoContext = await loadRepoContext(question);
 
   if (!question || question === "--help" || question === "-h") {
     printHelp();
@@ -34,11 +36,11 @@ async function main(): Promise<void> {
   }
 
   console.log(`Asking ${config.victorName} whether web search is needed...`);
-  const decision = await decideWebSearch(config, question, memory);
+  const decision = await decideWebSearch(config, question, memory, "", repoContext);
   console.log(`Decision: ${decision.needsWeb ? "search" : "local"} - ${decision.reason}`);
 
   if (!decision.needsWeb) {
-    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory, repoContext));
     const savedMemory = await rememberAfterTurn(config, question, answer, memory);
     printMemoryResult(savedMemory);
     console.log();
@@ -55,7 +57,7 @@ async function main(): Promise<void> {
 
   if (results.length === 0) {
     console.log("No search results found. Falling back to local answer.");
-    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory, repoContext));
     const savedMemory = await rememberAfterTurn(config, question, answer, memory);
     printMemoryResult(savedMemory);
     console.log();
@@ -68,7 +70,7 @@ async function main(): Promise<void> {
 
   if (sources.length === 0) {
     console.log("No readable source text fetched. Falling back to local answer.");
-    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory));
+    const answer = await askOllama(config, buildLocalAnswerPrompt(question, memory, repoContext));
     const savedMemory = await rememberAfterTurn(config, question, answer, memory);
     printMemoryResult(savedMemory);
     console.log();
@@ -78,7 +80,7 @@ async function main(): Promise<void> {
   }
 
   console.log(`Fetched ${sources.length} source(s). Asking ${config.victorName}...`);
-  const answer = await askOllama(config, buildWebAnswerPrompt(question, sources, memory));
+  const answer = await askOllama(config, buildWebAnswerPrompt(question, sources, memory, repoContext));
   const savedMemory = await rememberAfterTurn(config, question, answer, memory);
   printMemoryResult(savedMemory);
 
