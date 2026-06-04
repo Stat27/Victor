@@ -110,6 +110,8 @@ npm run agent -- "how do I recreate victor in debug mode?"
 
 `npm run web` always searches. `npm run agent` first asks Victor whether current web information is needed; if yes, Victor proposes the search query and the wrapper fetches sources before answering.
 
+One-shot agent runs do not write memory by default. Set `VICTOR_AUTO_MEMORY=1` only when you want `npm run agent` to save one durable memory update after a turn. Interactive chat memory writes stay explicit through `/remember`, `/propose-memory`, and `/approve`.
+
 Start an interactive chat session:
 
 ```bash
@@ -144,6 +146,7 @@ Useful environment variables:
 - `OLLAMA_HOST`: local Ollama API URL, default `http://localhost:11434`.
 - `VICTOR_NAME`: local model alias, default `victor`.
 - `THINK`: request thinking setting, default `false`.
+- `VICTOR_AUTO_MEMORY`: set to `1` to let one-shot `npm run agent` save one durable memory update after a turn.
 - `WRITE_RUN`: set to `1` to write a structured benchmark run note.
 - `WRITE_RUN_DEBUG`: set to `1` with `WRITE_RUN=1` to include raw Ollama JSON in the run note.
 - `WEB_MAX_RESULTS`: search results to fetch, default `5`.

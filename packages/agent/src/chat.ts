@@ -51,6 +51,9 @@ async function main(): Promise<void> {
 
     if (result.route.needsWeb) {
       console.log(`search> ${result.route.query} (${result.route.reason})`);
+      for (const query of result.route.queries.slice(1)) {
+        console.log(`search> ${query}`);
+      }
     }
 
     console.log();

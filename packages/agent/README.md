@@ -17,3 +17,5 @@ npm run agent -- "question"
 npm run chat
 npm run web -- "question"
 ```
+
+`npm run agent` and `npm run chat` share the same web-routing rules for current facts, model availability, and hardware-fit questions. One-shot `npm run agent` memory writes are off by default; set `VICTOR_AUTO_MEMORY=1` only when an automatic durable memory update is wanted.

@@ -4,8 +4,12 @@ import {
   buildLocalAnswerPrompt,
   buildWebAnswerPrompt,
   collectSources,
+  decideWebSearch,
   loadConfig,
   loadMemory,
+  normalizeSearchQueries,
+  rankSearchResults,
+  type SearchResult,
   searchDuckDuckGo
 } from "./victor_lib.ts";
 
@@ -24,18 +28,13 @@ export type ChatTurnResult = {
   route: {
     needsWeb: boolean;
     query: string;
+    queries: string[];
     reason: string;
   };
   sources: Array<{
     title: string;
     url: string;
   }>;
-};
-
-type AgentDecision = {
-  needsWeb: boolean;
-  query: string;
-  reason: string;
 };
 
 export const HISTORY_LIMIT = 8;
@@ -46,21 +45,27 @@ export async function answerChatTurn(
   history: ChatMessage[]
 ): Promise<ChatTurnResult> {
   const memory = await loadMemory(config);
-  const route = await decideSearch(config, question, memory, history);
+  const route = await decideWebSearch(config, question, memory, formatHistory(history));
 
   if (!route.needsWeb) {
     const answer = await answerLocal(config, question, memory, history);
     return { answer, route, sources: [] };
   }
 
-  const results = await searchDuckDuckGo(route.query, config.maxResults);
+  const queries = normalizeSearchQueries(route, question);
+  const results = await searchQueries(queries, config.maxResults, question);
   const sources = await collectSources(results, config.maxCharsPerSource);
 
   if (sources.length === 0) {
     const answer = await answerLocal(config, question, memory, history);
     return {
       answer,
-      route: { ...route, reason: `${route.reason}; no readable web sources fetched, answered locally.` },
+      route: {
+        ...route,
+        query: queries[0] ?? route.query,
+        queries,
+        reason: `${route.reason}; no readable web sources fetched, answered locally.`
+      },
       sources: []
     };
   }
@@ -73,7 +78,7 @@ ${formatHistory(history)}`;
   const answer = await askOllama(config, prompt);
   return {
     answer,
-    route,
+    route: { ...route, query: queries[0] ?? route.query, queries },
     sources: sources.map((source) => ({ title: source.title, url: source.url }))
   };
 }
@@ -157,52 +162,6 @@ export function formatHistory(history: ChatMessage[]): string {
   return history.map((message) => `${message.role}: ${message.content}`).join("\n\n");
 }
 
-async function decideSearch(
-  config: ReturnType<typeof loadConfig>,
-  question: string,
-  memory: string,
-  history: ChatMessage[]
-): Promise<AgentDecision> {
-  const prompt = `Decide whether this chat turn needs current web information.
-
-Use web search for recent facts, current docs, news, rankings, model availability, or source citations.
-Do not use web search for stable local repo workflow or facts already present in memory.
-
-Return only JSON:
-{
-  "needsWeb": true,
-  "query": "search query",
-  "reason": "short reason"
-}
-
-Memory:
-${memory || "(none)"}
-
-Recent chat:
-${formatHistory(history)}
-
-User turn:
-${question}`;
-
-  const raw = await askOllama(config, prompt);
-  const json = extractJson(raw);
-
-  if (!json) {
-    return { needsWeb: true, query: question, reason: "Routing JSON was invalid." };
-  }
-
-  try {
-    const parsed = JSON.parse(json) as Partial<AgentDecision>;
-    return {
-      needsWeb: Boolean(parsed.needsWeb),
-      query: typeof parsed.query === "string" && parsed.query.trim() ? parsed.query.trim() : question,
-      reason: typeof parsed.reason === "string" ? parsed.reason.trim() : "No reason provided."
-    };
-  } catch {
-    return { needsWeb: true, query: question, reason: "Routing JSON could not be parsed." };
-  }
-}
-
 async function answerLocal(
   config: ReturnType<typeof loadConfig>,
   question: string,
@@ -215,6 +174,26 @@ Recent chat:
 ${formatHistory(history)}`;
 
   return askOllama(config, prompt);
+}
+
+async function searchQueries(queries: string[], maxResults: number, question: string): Promise<SearchResult[]> {
+  const seen = new Set<string>();
+  const merged: SearchResult[] = [];
+
+  for (const query of queries) {
+    const results = await searchDuckDuckGo(query, maxResults);
+
+    for (const result of results) {
+      if (seen.has(result.url)) {
+        continue;
+      }
+
+      seen.add(result.url);
+      merged.push(result);
+    }
+  }
+
+  return rankSearchResults(merged, question).slice(0, maxResults);
 }
 
 function trimHistory(history: ChatMessage[]): void {
