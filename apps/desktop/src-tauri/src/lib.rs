@@ -3,13 +3,20 @@ use std::path::PathBuf;
 use std::process::Command;
 
 #[tauri::command]
-async fn ask_victor(message: String) -> Result<String, String> {
+async fn ask_victor(message: String, think: Option<String>) -> Result<String, String> {
     tauri::async_runtime::spawn_blocking(move || {
         let root = repo_root()?;
+        let think = think.unwrap_or_else(|| "false".to_string());
+
+        if !matches!(think.as_str(), "true" | "false" | "low" | "medium" | "high") {
+            return Err(format!("unsupported think setting: {think}"));
+        }
+
         let output = Command::new("node")
             .arg("packages/agent/src/agent_chat.ts")
             .arg(message)
             .current_dir(&root)
+            .env("THINK", think)
             .output()
             .map_err(|error| format!("failed to run Victor agent: {error}"))?;
 

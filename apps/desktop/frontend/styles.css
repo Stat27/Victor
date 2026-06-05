@@ -154,6 +154,12 @@ button {
   box-shadow: 0 0 0 4px rgba(247, 196, 74, 0.16);
 }
 
+.runtime-dot.think,
+.chip-dot.think {
+  background: #8a63d2;
+  box-shadow: 0 0 0 4px rgba(138, 99, 210, 0.13);
+}
+
 .runtime-item span:not(.runtime-dot) {
   display: block;
   color: #a0a59a;
@@ -626,6 +632,62 @@ textarea::placeholder {
   color: #7d8791;
   font-size: 12px;
   font-weight: 650;
+}
+
+.think-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  min-height: 34px;
+  margin-left: auto;
+  padding: 5px 10px 5px 6px;
+  border: 1px solid #d8dde2;
+  border-radius: 999px;
+  color: #4c5560;
+  background: #f8fafb;
+  font-size: 12px;
+  font-weight: 800;
+  cursor: pointer;
+  user-select: none;
+}
+
+.think-toggle input {
+  appearance: none;
+  position: relative;
+  width: 34px;
+  height: 20px;
+  margin: 0;
+  border: 1px solid #b8c0c8;
+  border-radius: 999px;
+  background: #dfe5ea;
+  cursor: pointer;
+}
+
+.think-toggle input::after {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 14px;
+  height: 14px;
+  border-radius: 999px;
+  background: #ffffff;
+  box-shadow: 0 1px 3px rgba(23, 25, 28, 0.28);
+  transition: transform 120ms ease-out;
+}
+
+.think-toggle input:checked {
+  border-color: #7858ba;
+  background: #8a63d2;
+}
+
+.think-toggle input:checked::after {
+  transform: translateX(14px);
+}
+
+.think-toggle:has(input:focus-visible) {
+  outline: 2px solid rgba(138, 99, 210, 0.28);
+  outline-offset: 2px;
 }
 
 .composer button {

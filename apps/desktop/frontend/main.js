@@ -11,11 +11,18 @@ const memoryContent = document.querySelector("#memory-content");
 const memoryStatus = document.querySelector("#memory-status");
 const quickActions = document.querySelectorAll(".quick-action");
 const promptCount = document.querySelector("#prompt-count");
+const thinkToggle = document.querySelector("#think-toggle");
+const thinkStatus = document.querySelector("#think-status");
 const emptyStateTemplate = document.querySelector("#empty-state")?.cloneNode(true);
+const savedThink = window.localStorage.getItem("victor-think") === "true";
+
+thinkToggle.checked = savedThink;
+syncThinkMode();
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
   const prompt = promptInput.value.trim();
+  const think = currentThinkValue();
 
   if (!prompt) {
     return;
@@ -28,8 +35,8 @@ form.addEventListener("submit", async (event) => {
   setBusy(true);
 
   try {
-    const raw = await invoke("ask_victor", { message: prompt });
-    updateMessage(pending, parseAgentOutput(raw));
+    const raw = await invoke("ask_victor", { message: prompt, think });
+    updateMessage(pending, withThinkMeta(parseAgentOutput(raw), think));
     await refreshMemoryStatus();
   } catch (error) {
     updateMessage(pending, { answer: `Error: ${String(error)}`, meta: [] });
@@ -45,6 +52,11 @@ promptInput.addEventListener("keydown", (event) => {
 });
 
 promptInput.addEventListener("input", syncPromptInput);
+
+thinkToggle.addEventListener("change", () => {
+  window.localStorage.setItem("victor-think", String(thinkToggle.checked));
+  syncThinkMode();
+});
 
 newChatButton.addEventListener("click", () => {
   messages.replaceChildren();
@@ -190,6 +202,7 @@ function renderMessage(item, content) {
 function setBusy(isBusy) {
   sendButton.disabled = isBusy;
   promptInput.disabled = isBusy;
+  thinkToggle.disabled = isBusy;
   sendButton.querySelector("span").textContent = isBusy ? "Working" : "Send";
   document.body.dataset.busy = isBusy ? "true" : "false";
 }
@@ -230,6 +243,13 @@ function parseAgentOutput(raw) {
   }
 
   return { answer: raw.slice(index + marker.length).trim(), meta, sources };
+}
+
+function withThinkMeta(payload, think) {
+  return {
+    ...payload,
+    meta: [`Thinking: ${think === "true" ? "on" : "off"}`, ...payload.meta],
+  };
 }
 
 function parseSources(raw) {
@@ -288,6 +308,15 @@ function syncPromptInput() {
   scrollMessagesToBottom();
 }
 
+function syncThinkMode() {
+  thinkStatus.textContent = thinkToggle.checked ? "on" : "off";
+  document.body.dataset.think = thinkToggle.checked ? "true" : "false";
+}
+
+function currentThinkValue() {
+  return thinkToggle.checked ? "true" : "false";
+}
+
 function scrollMessagesToBottom() {
   window.requestAnimationFrame(() => {
     messages.scrollTo({ top: messages.scrollHeight, behavior: "auto" });
@@ -305,7 +334,7 @@ async function mockInvoke(command, payload = {}) {
       "Decision: local - This preview is running without Tauri IPC.",
       "",
       "Answer:",
-      `Preview response for: ${payload.message || "Victor"}`,
+      `Preview response for: ${payload.message || "Victor"} (${payload.think === "true" ? "thinking" : "daily"})`,
     ].join("\n");
   }
 

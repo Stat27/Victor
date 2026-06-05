@@ -128,6 +128,8 @@ npm run desktop
 
 The desktop script clears Snap-provided GTK/GIO locale variables before launch. This avoids WebKitGTK loading incompatible `/snap/core20` libraries when running from a Snap-packaged VS Code terminal. Use `npm run desktop:raw` only when you want the unmodified Tauri dev command.
 
+In the desktop composer, use the `Think` toggle to switch the next request between `THINK=false` daily mode and `THINK=true` deeper reasoning without recreating the Ollama alias.
+
 Chat commands:
 
 - `/help`: show commands.

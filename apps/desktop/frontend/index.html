@@ -33,6 +33,13 @@
             </div>
           </div>
           <div class="runtime-item">
+            <span class="runtime-dot think"></span>
+            <div>
+              <span>Thinking</span>
+              <strong id="think-status">off</strong>
+            </div>
+          </div>
+          <div class="runtime-item">
             <span class="runtime-dot memory"></span>
             <div>
               <span>Memory</span>
@@ -111,6 +118,10 @@
                 <span id="prompt-count">0</span>
                 <span>characters</span>
               </div>
+              <label class="think-toggle" title="Switch between daily non-thinking answers and deeper thinking requests">
+                <input id="think-toggle" type="checkbox" />
+                <span>Think</span>
+              </label>
               <button id="send-button" type="submit" aria-label="Send message">
                 <span>Send</span>
               </button>
